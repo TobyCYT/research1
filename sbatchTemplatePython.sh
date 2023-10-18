@@ -57,4 +57,4 @@ srun whichgpu
 # conda install pytorch torchvision torchaudio -c pytorch
 
 # Submit your job to the cluster
-srun --gres=gpu:1 python source/utils/extract_blip.py
+srun --gres=gpu:1 python source/utils/extract_clip.py
