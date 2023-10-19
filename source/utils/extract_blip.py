@@ -34,7 +34,7 @@ def process_video(x):
                 vid_tensor = torch.cat((vid_tensor, tensorImg))
     except Exception as e:
         print('Video %s encountered exception %s when extracting...' % (name, e))
-        continue
+        return
     sample = {"image": vid_tensor.to(device)}
     features_image = model.extract_features(sample, mode="image")
     vid_fea = features_image.image_embeds_proj[:, 0, :]
