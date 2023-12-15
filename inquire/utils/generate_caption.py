@@ -4,7 +4,7 @@ import torch
 
 # Use blip to generate caption
 def generate_caption(image, model=None):
-    device = torch.device('cuda:1' if torch.cuda.is_available() else 'cpu')
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     processor = AutoProcessor.from_pretrained("Salesforce/blip2-opt-2.7b")
     if model is None:
         model = Blip2ForConditionalGeneration.from_pretrained("Salesforce/blip2-opt-2.7b", torch_dtype=torch.float16).to(device)

@@ -13,8 +13,8 @@ from tqdm import tqdm
 
 def main(dev = False):
     with torch.no_grad():
-        df = pd.read_csv('/mnt/hd_5.5t/toby/research1/dataset/filtered_30words_6sec_train.csv')
-        device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+        df = pd.read_csv('./dataset/filtered_30words_6sec_train.csv')
+        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         model = Blip2ForConditionalGeneration.from_pretrained("Salesforce/blip2-opt-2.7b", torch_dtype=torch.float16).to(device)
         processor = AutoProcessor.from_pretrained("Salesforce/blip2-opt-2.7b")
         transform = transforms.Compose([transforms.PILToTensor()])
@@ -24,7 +24,7 @@ def main(dev = False):
             name = str(df['videoid'][x])
             if dev:
                 print(df['contentUrl'][x])
-            if (os.path.exists("/mnt/hd_5.5t/toby/research1/dataset/caption/%s.txt" % name)):
+            if (os.path.exists("./dataset/caption/%s.txt" % name)):
                 continue  # Skip if file already exists
             try:
                 vid = []
@@ -33,6 +33,10 @@ def main(dev = False):
                 length = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
                 width = int(video.get(cv2.CAP_PROP_FRAME_WIDTH))
                 height = int(video.get(cv2.CAP_PROP_FRAME_HEIGHT))
+                adj = round(fps) // 3
+                if adj == 0:
+                    print(df['contentUrl'][x])
+                    print(fps)
                 for fno in range(0, length, round(fps) // 3):  # Convert Video to 3FPS
                     video.set(cv2.CAP_PROP_POS_FRAMES, fno)
                     _, cvImg = video.read()
@@ -51,7 +55,7 @@ def main(dev = False):
 
                 caption = ''.join(caption)
 
-                with open("/mnt/hd_5.5t/toby/research1/dataset/caption/%s.txt" % name, 'w') as f:
+                with open("./dataset/caption/%s.txt" % name, 'w') as f:
                     f.write(caption)
 
             except Exception as e:

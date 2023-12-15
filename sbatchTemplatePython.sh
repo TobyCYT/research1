@@ -4,7 +4,7 @@
 ## TEMPLATE VERSION 1.01                       ##
 #################################################
 ## ALL SBATCH COMMANDS WILL START WITH #SBATCH ##
-## DO NOT REMOVE THE # SYMBOL                  ## 
+## DO NOT REMOVE THE # SYMBOL                  ##
 #################################################
 
 #SBATCH --nodes=1                   # How many nodes required? Usually 1
@@ -57,4 +57,4 @@ srun whichgpu
 # conda install pytorch torchvision torchaudio -c pytorch
 
 # Submit your job to the cluster
-srun --gres=gpu:1 python source/utils/extract_clip.py
+srun --gres=gpu:1 python inquire/utils/captioning.py
