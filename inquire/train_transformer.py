@@ -1,6 +1,7 @@
 # from model.transformer import Transformer
 # from model.attention import attention
 from model.neuralnet import NeuralNet
+# from model.encoder import Encoder
 
 from utils.dataloader import get_loader
 
@@ -21,10 +22,12 @@ def train(model, train_loader, val_loader, criterion, optimizer, scheduler, num_
     os.makedirs(ckpt_path, exist_ok=True)
     # Save the current settings into settings.txt, optimizer, scheduler, criterion, learning rate
     with open(ckpt_path+'/settings.txt', 'w') as f:
-        f.write('Optimizer: %s\n'%optimizer)
+        f.write('Optimizer:\n%s\n'%optimizer)
         f.write('Scheduler: %s\n'%scheduler)
         f.write('Criterion: %s\n'%criterion)
         f.write('Learning rate: %s\n'%optimizer.param_groups[0]['lr'])
+        f.write('Model structure:\n%s\n'%model)
+        f.write('Model parameters: %s\n'%sum(p.numel() for p in model.parameters() if p.requires_grad))
         
     for epoch in range(num_epochs):
         # Each epoch has a training and validation phase
@@ -56,6 +59,7 @@ def train(model, train_loader, val_loader, criterion, optimizer, scheduler, num_
                     outputs = torch.sigmoid(outputs)
                     loss = criterion(outputs, sample_label.float())
 
+
                     # backward + optimize only if in training phase
                     if phase == 'train':
                         loss.backward()
@@ -63,7 +67,7 @@ def train(model, train_loader, val_loader, criterion, optimizer, scheduler, num_
 
                 # statistics
                 running_loss += loss.item() * sample.size(0)
-                running_corrects += torch.sum(torch.round(torch.sigmoid(outputs)) == sample_label.data)
+                running_corrects += torch.sum(torch.round(outputs) == sample_label.data)
 
             epoch_loss = running_loss / len(dataloader.dataset)
             epoch_acc = running_corrects.double() / len(dataloader.dataset)
@@ -95,15 +99,18 @@ def train(model, train_loader, val_loader, criterion, optimizer, scheduler, num_
         f.write('Best train loss: %s\n'%best_train_loss)
 
 def start_train(ckpt=None, num_epochs=100, warmup_epochs=0):
-    device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-    # model = Transformer(512, 512, 1, 8, 2048, 0.1, 1).to(device)
-    model = NeuralNet().to(device)
-    train_loader = get_loader(mode='train', batch_size= 128)
-    val_loader = get_loader(mode='val', batch_size= 128)
+    device = torch.device('cuda:1' if torch.cuda.is_available() else 'cpu')
+    # model = Transformer(512, 512, 1, 8, 2048, 0, 1).to(device)
+    # model = Encoder(512, 8, dropout=0, num_layers=1).to(device)
+    model = NeuralNet(dropout=0).to(device)
+
+    train_loader = get_loader(mode='train', batch_size= 16)
+    val_loader = get_loader(mode='val', batch_size= 16)
     criterion = torch.nn.BCELoss()
-    optimizer = torch.optim.Adam(model.parameters(), lr=3e-4)
-    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.1, patience=10, verbose=True)
-    # scheduler = None
+    optimizer = torch.optim.Adam(model.parameters(), lr=3e-4, weight_decay=0)
+    # scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.1, patience=10, verbose=True)
+    scheduler = None
+
     if ckpt is not None:
         model.load_state_dict(torch.load(ckpt))
 
@@ -116,7 +123,7 @@ def start_train(ckpt=None, num_epochs=100, warmup_epochs=0):
     train(model, train_loader, val_loader, criterion, optimizer, scheduler, num_epochs=num_epochs, device=device)
 
 def main():
-    start_train(num_epochs=300)
+    start_train(num_epochs=100)
 
 if __name__ == '__main__':
     main()

@@ -1,5 +1,13 @@
-from model.transformer_modules.mha import multi_head_attention
-from model.transformer_modules.pffn import pffn
+try:
+    from model.transformer_modules.mha import multi_head_attention
+    from model.transformer_modules.pffn import pffn
+except:
+    try:
+        from transformer_modules.mha import multi_head_attention
+        from transformer_modules.pffn import pffn
+    except:
+        from mha import multi_head_attention
+        from pffn import pffn
 
 import torch
 from torchsummary import summary

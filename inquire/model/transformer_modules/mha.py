@@ -1,4 +1,10 @@
-from model.transformer_modules.attention import attention_head
+try:
+    from model.transformer_modules.attention import attention_head
+except:
+    try:
+        from transformer_modules.attention import attention_head
+    except:
+        from attention import attention_head
 
 import torch
 

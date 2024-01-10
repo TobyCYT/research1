@@ -1,5 +1,10 @@
-from model.transformer_modules.decoder import Decoder
-from model.transformer_modules.encoder import Encoder
+try:
+    from model.transformer_modules.decoder import Decoder
+    from model.transformer_modules.encoder import Encoder
+except:
+    from transformer_modules.decoder import Decoder
+    from transformer_modules.encoder import Encoder
+
 
 import torch
 
@@ -43,6 +48,7 @@ class Transformer(torch.nn.Module):
         # Apply the transformer layers
         for layer in self.transformer_layers:
             src, trg = layer(src, trg, src_mask, trg_mask)
+        trg = trg.squeeze(1)
         # Apply the linear layer
         output = self.linear(trg)
         return output
