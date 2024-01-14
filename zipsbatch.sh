@@ -10,8 +10,7 @@
 #SBATCH --nodes=1                   # How many nodes required? Usually 1
 #SBATCH --cpus-per-task=8           # Number of CPU to request for the job
 #SBATCH --mem=32GB                   # How much memory does your job require?
-#SBATCH --gres=gpu:1                # Do you require GPUS? If not delete this line
-#SBATCH --time=05-00:00:00          # How long to run the job for? Jobs exceed this time will be terminated
+#SBATCH --time=02-00:00:00          # How long to run the job for? Jobs exceed this time will be terminated
                                     # Format <DD-HH:MM:SS> eg. 5 days 05-00:00:00
                                     # Format <DD-HH:MM:SS> eg. 24 hours 1-00:00:00 or 24:00:00
 #SBATCH --mail-type=BEGIN,END,FAIL  # When should you receive an email?
@@ -23,7 +22,7 @@
 ## EDIT AFTER THIS LINE IF YOU ARE OKAY WITH DEFAULT SETTINGS ##
 ################################################################
 
-#SBATCH --partition=researchlong                 # The partition you've been assigned
+#SBATCH --partition=researchshort                 # The partition you've been assigned
 #SBATCH --account=ngochongwahresearch   # The account you've been assigned (normally student)
 #SBATCH --qos=researchqos       # What is the QOS assigned to you? Check with myinfo command
 #SBATCH --mail-user=yt.cheng.2023@phdcs.smu.edu.sg # Who should receive the email notifications
@@ -57,4 +56,4 @@ srun whichgpu
 # conda install pytorch torchvision torchaudio -c pytorch
 
 # Submit your job to the cluster
-srun --gres=gpu:1 python retrieval/utils/extract_cat.py
+srun zip -r cat.zip dataset/cat/
